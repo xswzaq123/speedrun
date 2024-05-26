@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=3 uid="uid://bxi7q6oa56har"]
+
+[ext_resource type="PackedScene" uid="uid://cx1d5ln4n76ug" path="res://scenes/player.tscn" id="1_sfdo8"]
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_pmuia"]
+distance = -1040.0
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_esvmp"]
+normal = Vector2(1, 0)
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_5f72l"]
+normal = Vector2(-1, 0)
+distance = -1920.0
+
+[node name="Main" type="Node2D"]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+collision_mask = 0
+
+[node name="bot" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(0, 1)
+shape = SubResource("WorldBoundaryShape2D_pmuia")
+
+[node name="ColorRect" type="ColorRect" parent="StaticBody2D"]
+offset_left = -888.0
+offset_top = 1040.0
+offset_right = 1032.0
+offset_bottom = 1088.0
+scale = Vector2(2.04, 1)
+color = Color(0.101961, 0.101961, 0.101961, 1)
+
+[node name="left" type="CollisionShape2D" parent="StaticBody2D"]
+shape = SubResource("WorldBoundaryShape2D_esvmp")
+
+[node name="right" type="CollisionShape2D" parent="StaticBody2D"]
+shape = SubResource("WorldBoundaryShape2D_5f72l")
+
+[node name="Player" parent="." instance=ExtResource("1_sfdo8")]
+position = Vector2(960, 896)
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+limit_left = 0
+limit_right = 1920
+limit_bottom = 1080
+
+[node name="Node" type="Node" parent="."]
