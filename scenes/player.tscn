@@ -1,7 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://cx1d5ln4n76ug"]
+[gd_scene load_steps=8 format=3 uid="uid://cx1d5ln4n76ug"]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_n8kkr"]
 [ext_resource type="Texture2D" uid="uid://tbh50to11vbr" path="res://assets/arrow.png" id="2_cqlix"]
+[ext_resource type="Texture2D" uid="uid://b6h4cwvub6oma" path="res://assets/block.png" id="3_q1i7f"]
+[ext_resource type="Texture2D" uid="uid://ecew213ud2k5" path="res://assets/progress.png" id="4_6oxx8"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_rsc8y"]
 friction = 0.17
@@ -54,12 +56,13 @@ texture = ExtResource("2_cqlix")
 [node name="ArrowMarker" type="Marker2D" parent="ArrowAxis/Arrow"]
 position = Vector2(25, 0)
 
-[node name="JumpStrengthBar" type="ProgressBar" parent="ArrowAxis/Arrow"]
+[node name="JumpStrengthBar" type="TextureProgressBar" parent="ArrowAxis/Arrow"]
 offset_left = -29.0
 offset_top = -22.0
 offset_right = 29.0
 offset_bottom = 20.0
-show_percentage = false
+texture_under = ExtResource("3_q1i7f")
+texture_progress = ExtResource("4_6oxx8")
 
 [node name="GroundCheck" type="Area2D" parent="."]
 collision_layer = 2
