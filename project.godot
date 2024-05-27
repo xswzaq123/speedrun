@@ -15,6 +15,10 @@ run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+Global="*res://scripts/global/global.gd"
+
 [display]
 
 window/size/viewport_width=1920
@@ -59,7 +63,13 @@ toggle_debug={
 
 2d_physics/layer_1="world"
 2d_physics/layer_2="player"
+2d_physics/layer_3="obstacle"
 
 [physics]
 
+common/physics_ticks_per_second=140
 2d/physics_engine="GodotPhysics2D"
+2d/solver/solver_iterations=300
+2d/solver/contact_recycle_radius=2.75
+2d/solver/contact_max_separation=0.84
+2d/solver/contact_max_allowed_penetration=0.01

@@ -1,28 +1,23 @@
-extends CharacterBody2D
+class_name Cactus extends Node2D
 
+@onready var hurtbox: Area2D = $Hurtbox
+@export var knockBackStrength := 900.0
+@onready var timer: Timer = $Timer
 
-const SPEED = 300.0
-const JUMP_VELOCITY = -400.0
+func _ready() -> void:
+  hurtbox.body_entered.connect(knockBack)
+  timer.timeout.connect(enableCollision)
 
-# Get the gravity from the project settings to be synced with RigidBody nodes.
-var gravity: int = ProjectSettings.get_setting("physics/2d/default_gravity")
-
-
-func _physics_process(delta: float) -> void:
-  # Add the gravity.
-  if not is_on_floor():
-    velocity.y += gravity * delta
-
-  # Handle jump.
-  if Input.is_action_just_pressed("ui_accept") and is_on_floor():
-    velocity.y = JUMP_VELOCITY
-
-  # Get the input direction and handle the movement/deceleration.
-  # As good practice, you should replace UI actions with custom gameplay actions.
-  var direction := Input.get_axis("ui_left", "ui_right")
-  if direction:
-    velocity.x = direction * SPEED
+func knockBack(body: RigidBody2D) -> void:
+  hurtbox.set_collision_mask_value(2, false)
+  timer.start()
+  var direction := body.global_position.x - global_position.x
+  var dir: Vector2
+  if direction > 0:
+    dir = Vector2.RIGHT
   else:
-    velocity.x = move_toward(velocity.x, 0, SPEED)
+    dir = Vector2.LEFT
+  Global.KnockBack.emit(dir, knockBackStrength)
 
-  move_and_slide()
+func enableCollision() -> void:
+  hurtbox.set_collision_mask_value(2, true)
