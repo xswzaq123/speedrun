@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cx1d5ln4n76ug"]
+[gd_scene load_steps=15 format=3 uid="uid://cx1d5ln4n76ug"]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_n8kkr"]
 [ext_resource type="Texture2D" uid="uid://tbh50to11vbr" path="res://assets/arrow.png" id="2_cqlix"]
@@ -91,6 +91,9 @@ animations = [{
 "speed": 10.0
 }]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4lib6"]
+size = Vector2(12, 8)
+
 [node name="Player" type="RigidBody2D" node_paths=PackedStringArray("jumpStrengthBar", "debug")]
 collision_layer = 2
 physics_material_override = SubResource("PhysicsMaterial_rsc8y")
@@ -100,8 +103,14 @@ script = ExtResource("1_n8kkr")
 jumpStrengthBar = NodePath("ArrowAxis/Arrow/JumpStrengthBar")
 minJumpStrength = 300.0
 maxJumpStrength = 1300.0
-debugVisible = true
 debug = NodePath("CanvasLayer/Debug/MarginContainer/VBoxContainer")
+
+[node name="AirTimer" type="Timer" parent="."]
+wait_time = 0.5
+
+[node name="FlashTimer" type="Timer" parent="."]
+wait_time = 0.2
+one_shot = true
 
 [node name="ColorRect" type="ColorRect" parent="."]
 visible = false
@@ -187,21 +196,21 @@ animation = &"idle"
 autoplay = "idle"
 offset = Vector2(0, -30)
 
-[node name="FlashTimer" type="Timer" parent="."]
-wait_time = 0.2
-one_shot = true
-
 [node name="RayCast2D" type="RayCast2D" parent="."]
-visible = false
 position = Vector2(-13, -1)
-target_position = Vector2(0, 55)
+target_position = Vector2(0, 43)
 
 [node name="RayCast2D2" type="RayCast2D" parent="."]
-visible = false
 position = Vector2(13, -1)
-target_position = Vector2(0, 55)
+target_position = Vector2(0, 43)
 
 [node name="RayCast2D3" type="RayCast2D" parent="."]
-visible = false
 position = Vector2(0, -1)
-target_position = Vector2(0, 55)
+target_position = Vector2(0, 43)
+
+[node name="AirTimeArea" type="Area2D" parent="."]
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AirTimeArea"]
+position = Vector2(0, 17)
+shape = SubResource("RectangleShape2D_4lib6")

@@ -1,9 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://d13fpervq4jdj"]
+[gd_scene load_steps=4 format=3 uid="uid://d13fpervq4jdj"]
 
-[ext_resource type="Script" path="res://scripts/player2.gd" id="1_6vgkh"]
+[ext_resource type="Script" path="res://scripts/cactus.gd" id="1_6vgkh"]
+[ext_resource type="Texture2D" uid="uid://b3b61gvgrk05x" path="res://assets/tilemap.png" id="2_20ng1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_booxk"]
-size = Vector2(64, 64)
+size = Vector2(59, 62)
 
 [node name="Cactus" type="Node2D"]
 script = ExtResource("1_6vgkh")
@@ -13,9 +14,12 @@ collision_layer = 4
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+visible = false
+position = Vector2(0.5, 1)
 shape = SubResource("RectangleShape2D_booxk")
 
 [node name="ColorRect" type="ColorRect" parent="."]
+visible = false
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -31,3 +35,8 @@ grow_vertical = 2
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.1
 one_shot = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_20ng1")
+region_enabled = true
+region_rect = Rect2(256, 256, 64, 64)

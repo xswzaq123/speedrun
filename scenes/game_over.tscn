@@ -1,0 +1,261 @@
+[gd_scene load_steps=11 format=3 uid="uid://b00g5xl5y45lt"]
+
+[sub_resource type="GDScript" id="GDScript_gjm75"]
+script/source = "extends Control
+
+@onready var animator: AnimationPlayer = $AnimationPlayer
+@onready var timeLabel: RichTextLabel = $Node2D/Label2
+@onready var btn1: Button = $Node2D2/Button
+@onready var btn2: Button = $Node2D2/Button2
+
+var btnInitialScale := Vector2(1.5, 1.5)
+
+var finishTime: String = \"\"
+
+func _ready() -> void:
+  btn1.scale = Vector2(btnInitialScale)
+  btn1.modulate.a = 0.0
+  btn2.scale = Vector2(btnInitialScale)
+  btn2.modulate.a = 0.0
+  print(btn1.theme)
+  timeLabel.text = \"[center]Your Time: %s [/center]\" % finishTime
+  position.y = -500.0
+  modulate.a = 0.0
+  var tween = create_tween()
+  tween.set_parallel(true)
+  tween.tween_property(self, \"position\", Vector2(0, 0), 0.2)
+  tween.tween_property(self, \"modulate:a\", 1.0, 0.3)
+  tween.set_parallel(false)
+  await tween.finished
+  tween.stop()
+  animator.play(\"pop\")
+  await animator.animation_finished
+  tween.play()
+  tween.set_parallel(true)
+  tween.tween_property(btn1, \"scale\", Vector2(1, 1), 0.1)
+  tween.tween_property(btn1, \"modulate:a\", 1.1, 0.1)
+  await tween.finished
+  tween.stop()
+  tween.tween_property(btn2, \"scale\", Vector2(1, 1), 0.1)
+  tween.tween_property(btn2, \"modulate:a\", 1.1, 0.1)
+  tween.play()
+  await tween.finished
+  tween.stop()
+
+func retry() -> void:
+  get_tree().change_scene_to_file(\"res://scenes/main.tscn\")
+
+func mainMenu() -> void:
+  get_tree().change_scene_to_file(\"res://scenes/home_screen.tscn\")
+"
+
+[sub_resource type="Animation" id="Animation_8yy35"]
+resource_name = "pop"
+length = 0.8
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Node2D:scale:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0),
+"points": PackedFloat32Array(0.175, -0.25, 0, 0.25, 0, 1.2, -0.25, 0, 0.25, 0, 1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 0.8)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Node2D:scale:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0),
+"points": PackedFloat32Array(0.175, -0.25, 0, 0.25, 0, 1.2, -0.25, 0, 0.25, 0, 1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.5, 0.8)
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Node2D:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_i0ehm"]
+length = 0.001
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Node2D:scale:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Node2D:scale:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Node2D:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_jr4fs"]
+_data = {
+"RESET": SubResource("Animation_i0ehm"),
+"pop": SubResource("Animation_8yy35")
+}
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kl0w2"]
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ka1ej"]
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hgqcr"]
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_no1ro"]
+content_margin_left = 15.0
+content_margin_right = 15.0
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e0t5l"]
+content_margin_left = 15.0
+content_margin_right = 15.0
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_eokmp"]
+content_margin_left = 15.0
+content_margin_right = 15.0
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[node name="GameOver" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_gjm75")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+custom_minimum_size = Vector2(1280, 720)
+layout_mode = 2
+offset_left = 320.0
+offset_top = 180.0
+offset_right = 1600.0
+offset_bottom = 900.0
+color = Color(0.215686, 0.215686, 0.215686, 1)
+
+[node name="Node2D" type="Node2D" parent="."]
+visible = false
+position = Vector2(960, 483)
+
+[node name="Label" type="Label" parent="Node2D"]
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -247.5
+offset_top = -64.1667
+offset_right = 247.5
+offset_bottom = 10.8333
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 6.28319
+theme_override_colors/font_color = Color(0.760784, 0.584314, 0.203922, 1)
+theme_override_font_sizes/font_size = 62
+text = "Congratulations!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="RichTextLabel" parent="Node2D"]
+offset_left = -215.0
+offset_top = 24.0
+offset_right = 215.0
+offset_bottom = 44.0
+theme_override_colors/default_color = Color(0.87451, 0.87451, 0.87451, 1)
+theme_override_font_sizes/normal_font_size = 24
+bbcode_enabled = true
+text = "[center]Your Time[/center]"
+fit_content = true
+scroll_active = false
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_jr4fs")
+}
+speed_scale = 2.0
+
+[node name="Node2D2" type="Node2D" parent="."]
+position = Vector2(887, 606)
+
+[node name="Button" type="Button" parent="Node2D2"]
+offset_left = -105.0
+offset_top = 9.0
+offset_right = 26.0
+offset_bottom = 49.0
+pivot_offset = Vector2(65.5, 20)
+size_flags_horizontal = 3
+theme_override_styles/normal = SubResource("StyleBoxFlat_kl0w2")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ka1ej")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_hgqcr")
+text = "Retry"
+
+[node name="Button2" type="Button" parent="Node2D2"]
+offset_left = 119.0
+offset_top = 9.0
+offset_right = 228.0
+offset_bottom = 49.0
+pivot_offset = Vector2(65.5, 20)
+size_flags_horizontal = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_no1ro")
+theme_override_styles/hover = SubResource("StyleBoxFlat_e0t5l")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_eokmp")
+text = "Back to Menu"
+
+[connection signal="pressed" from="Node2D2/Button" to="." method="retry"]
+[connection signal="pressed" from="Node2D2/Button2" to="." method="mainMenu"]

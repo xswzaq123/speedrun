@@ -8,6 +8,8 @@ class_name Player extends RigidBody2D
 @onready var ray: RayCast2D = $RayCast2D
 @onready var ray2: RayCast2D = $RayCast2D2
 @onready var ray3: RayCast2D = $RayCast2D3
+@onready var airTimeArea: Area2D = $AirTimeArea
+@onready var airTimer: Timer = $AirTimer
 
 # NOTE: gravity vars
 @export_group("Gravity")
@@ -41,10 +43,10 @@ class_name Player extends RigidBody2D
 @export var debugVisible := false
 @export var debug: Control
 
-
 # NOTE: script vars
 var velocity: Vector2
-var canPush: bool = false
+var airTime: int
+var controlDisabled: bool = false
 var arrowRotation: float:
   set(value):
     arrowRotation = clamp(value, -180, 0)
@@ -66,7 +68,11 @@ func _ready() -> void:
   gravity_scale = defaultGravity
 
   Global.KnockBack.connect(knockBack)
+  Global.GameOver.connect(disableController)
   flashTimer.timeout.connect(revertFlash)
+  airTimeArea.body_entered.connect(stopAirTimeCountdown)
+  airTimeArea.body_exited.connect(startAirTimeCountdown)
+  airTimer.timeout.connect(increaseAirTime)
 
 func _process(_delta: float) -> void:
   if !debugVisible:
@@ -79,6 +85,10 @@ func _process(_delta: float) -> void:
     debug.get_child(3).text = "Velocity: " + str("x: %.02f y: %.02f" % [velocity.x, velocity.y])
 
 func _physics_process(delta: float) -> void:
+  if airTime >= 4 and abs(velocity) <= Vector2(0.2, 0.2) and isOnFloor():
+    anim.scale = Vector2(1, 0.1)
+    await get_tree().create_timer(0.1).timeout
+    create_tween().tween_property(anim, "scale", Vector2(1, 1), 0.3)
   if ray.is_colliding() or ray2.is_colliding()  or ray3.is_colliding():
     physics_material_override.bounce = fallBounce
     physics_material_override.friction = defaultFriction
@@ -86,20 +96,20 @@ func _physics_process(delta: float) -> void:
     physics_material_override.friction = noFriction
     physics_material_override.bounce = defaultBounce
 
+  if not controlDisabled:
+    if Input.is_action_pressed("moveLeft"):
+      arrowRotation -= 1 * arrowRotationSpeed * delta
+      arrowAxis.rotation_degrees = arrowRotation
 
-  if Input.is_action_pressed("moveLeft"):
-    arrowRotation -= 1 * arrowRotationSpeed * delta
-    arrowAxis.rotation_degrees = arrowRotation
+    if Input.is_action_pressed("moveRight"):
+      arrowRotation += 1 * arrowRotationSpeed * delta
+      arrowAxis.rotation_degrees = arrowRotation
 
-  if Input.is_action_pressed("moveRight"):
-    arrowRotation += 1 * arrowRotationSpeed * delta
-    arrowAxis.rotation_degrees = arrowRotation
-
-  if Input.is_action_pressed("jump"):
-    anim.scale.y -= 0.5 * delta
-    anim.scale.y = clamp(anim.scale.y, 0.1, 1)
-    jumpStrength += jumpStrengthMultiplier * delta
-    jumpStrengthBar.value = jumpStrength
+    if Input.is_action_pressed("jump") and abs(velocity) <= Vector2(0.2, 0.2):
+      anim.scale.y -= 0.5 * delta
+      anim.scale.y = clamp(anim.scale.y, 0.1, 1)
+      jumpStrength += jumpStrengthMultiplier * delta
+      jumpStrengthBar.value = jumpStrength
 
   velocity = linear_velocity
   if isFalling():
@@ -110,13 +120,10 @@ func _physics_process(delta: float) -> void:
     await get_tree().create_timer(0.2).timeout
     gravity_scale = defaultGravity
     #physics_material_override.bounce = defaultBounce
-  #if isRising():
-    #physics_material_override.friction = noFriction
-  #if isOnFloor():
-    #physics_material_override.friction = defaultFriction
+
 
 func _unhandled_input(event: InputEvent) -> void:
-    if event.is_action_released("jump") and isOnFloor():
+    if event.is_action_released("jump") and abs(velocity) <= Vector2(0.2, 0.2) and not controlDisabled:
       handleJump()
 
     if event.is_action_pressed("toggle_debug"):
@@ -150,12 +157,34 @@ func isOnFloor() -> bool:
   return not isRising() and not isFalling()
 
 func knockBack(dir: Vector2, kbStr: float) -> void:
+  linear_velocity = Vector2.ZERO
   flashTimer.start()
   anim.material.set_shader_parameter("progress", 0.8)
   apply_impulse(dir * kbStr)
+  apply_impulse(Vector2.UP * 300)
 
 func revertFlash() -> void:
   anim.material.set_shader_parameter("progress", 0.0)
 
+func startAirTimeCountdown(_body: Node2D) -> void:
+  Global.PlayerGrounded.emit(false)
+  #create_tween().tween_property(arrowAxis, "modulate:a", 0, 0.1)
+  airTime = 0
+  airTimer.start()
 
+func stopAirTimeCountdown(_body: Node2D) -> void:
+  #create_tween().tween_property(arrowAxis, "modulate:a", 1, 0.2)
+  Global.PlayerGrounded.emit(true)
+
+  airTimer.stop()
+  #if airTime >= 3 and abs(velocity) <= Vector2(0.2, 0.2):
+    #anim.scale = Vector2(1, 0.1)
+    #await get_tree().create_timer(0.3).timeout
+    #create_tween().tween_property(anim, "scale", Vector2(1, 1), 0.3)
+
+func increaseAirTime() -> void:
+  airTime += 1
+
+func disableController() -> void:
+  controlDisabled = true
 
